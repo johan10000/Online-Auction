@@ -15,10 +15,15 @@ contract Auction {
 
     address highestBidder;
 
+    uint startTime=block.timestamp;
+
+    uint endTime;
+
     // put new bid
     function putBid() public payable
     {
         uint calculateAmount = biddersData[msg.sender] + msg.value;
+        require(block.timestamp <= endTime, "The auction has ended");
         require(msg.value > 0, "Bid amount cannot be zero");
         require(calculateAmount > highestBidAmount, "Please bid more than highest bid");
         biddersData[msg.sender] = calculateAmount;
@@ -42,4 +47,21 @@ contract Auction {
     {
         return highestBidder;
     }
+
+    // get highest bidder address
+    function putEndTime(uint _endTime) public
+    {
+        endTime = _endTime;
+    }
+
+    // if any bidder wants to withdraw bid
+    function withdrawBid(address payable _addr) public
+    {
+        if(biddersData[_addr] > 0)
+        {
+            _addr.transfer(biddersData[_addr]);
+        }
+    }
+
+    
 }
